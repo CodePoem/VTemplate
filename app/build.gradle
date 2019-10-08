@@ -12,7 +12,7 @@ if (keyfile.exists()) {
     properties.load(keyfile.newDataInputStream())
 } else {
     // Travis-CI
-    keyfile = file("/jks/mrd@vdreamers")
+    keyfile = file("mrd@vdreamers")
     keystorePWD = System.getenv("KEYSTORE_PWD")
     keystoreAlias = System.getenv("KEYSTORE_ALIAS")
     keystoreAliasPWD = System.getenv("KEYSTORE_ALIAS_PWD")
