@@ -13,7 +13,7 @@ android:
     - android-sdk-license-.+
     - google-gdk-license-.+
 script:
-  - ./gradlew assembleRelease
+  - "./gradlew assembleRelease"
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -25,3 +25,14 @@ cache:
 before_install:
   - openssl aes-256-cbc -K $encrypted_cd91ae131fae_key -iv $encrypted_cd91ae131fae_iv
     -in mrd@vdreamers.enc -out mrd@vdreamers -d
+deploy:
+  provider: releases
+  api_key:
+    secure: qOr4mGdf8lESDCiMo7ZJbGqLEHI3cXuV4UlQ2ZzvjSpDQyXrQ2l8wHMdgTkFxmlJWReOUuumHK346StBlGA2mQ5ufc6LhtHaCJWNpnk2Nixd2qFma9ySgPakz+7NoMml4wvkgMnn4HBCTV13ucJPxEzVt8KkX1JAiN9s5rh8SkB36i9KC4i/SuAPNPx2vHbglnoPFtToBlQa+cMLRSlXVkLHYYVdWRZOBRneu/H79oPkw5ajfsSG5u7RCCcEaaAfY1oU7ho1mrB1Kogq64BemGZSkIHgF5TCmmWgNypDlAm92tCN0G3uP0xffUZZsUqYoHiflXTjyXoYG4gXXC+SCCmkkFah0DZPcTZ6AHerBJ/8YgJX6/8tV3sH89PuM6HEuPmHbE3xEsGzUZWNrkJWHdJBLi5bXZnuSRvq+JDM/0CYSYuTx+lHCcCUiODIKTXFwHOaB+J+bKUTvvz91Rd7ELodUiBTAI/hXDYmWBAgY9Snw8+qBXiA7Ocp+ykcRuiUXXxvYlLgIzqtTEnoODBOsZ5ukjJoUs2GObcOgyBt4eedv7EfUcUKxHdf7ECZbhCEvhtVvHGzzIN5BN3R8+YJKnb0CmsO6FyCgCSnTyvKlFVfSX5s0v9E7XVFrCOo1gVDoL28v7AmrDZsl1mEaRSvVcOHtAXEhZEyF0CdafJ6s5A=
+  file: app/build/outputs/apk/app-release.apk
+  # 这句手动添加
+  skip_cleanup: true
+  on:
+    repo: CodePoem/VTemplate
+    # 这句手动添加
+    tags: true
