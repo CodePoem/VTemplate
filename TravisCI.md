@@ -81,8 +81,8 @@ before_install:
 
 ##### 实现本地和Travis-CI构建release包互不干扰
 
-基本思路，判断local.properties否存在，存在即为本地构建，不存在即为Travis-CI构建。
-本地构建去local.properties中读取证书配置；Travis-CI构建通过System.getenv去读取环境变量的证书配置。
+基本思路，判断环境变量 CI 是否 为 true，通过 System.getenv("CI") 去获取环境变量 CI 的值，fals e即为本地构建，true 即为 Travis-CI 构建。
+本地构建去 local.properties 中读取证书配置；Travis-CI 构建通过 System.getenv 去读取环境变量的证书配置。
 
 ```gradle
 apply plugin: 'com.android.application'
@@ -156,10 +156,10 @@ android {
 
 #### GitHub Release
 
-1. 命令行自动生成deploy配置。
+1. 命令行自动生成 deploy 配置。
 
-需要输入GitHub账户名和密码以及apk路径，如 app/build/outputs/apk/app-release.apk
-执行完后会自动在.travis.yml添加如下配置：
+需要输入 GitHub 账户名和密码以及 apk 路径，如 app/build/outputs/apk/app-release.apk
+执行完后会自动在 .travis.yml 添加如下配置：
 
 ```yml
 deploy:
@@ -175,13 +175,13 @@ deploy:
     tags: true
 ```
 
-* provider：发布目标为GitHub Release，除了GitHub外，Travis CI还支持发布到AWS、Google App Engine等数十种provider。
-* secure：是加密后的GitHub Access Token。
+* provider：发布目标为 GitHub Release ，除了 GitHub 外，Travis CI还支持发布到 AWS 、Google App Engine 等数十种 provider 。
+* secure：是加密后的 GitHub Access Token 。
 * file：发布的文件。
-* skip_cleanup：默认情况下Travis CI在完成编译后会清除所有生成的文件，因此要将skip_cleanup设置为true来忽略此操作。
-* on：发布的时机，这里配置为tags: true，即只在有tag的情况才发布。
+* skip_cleanup：默认情况下 Travis CI 在完成编译后会清除所有生成的文件，因此要将 skip_cleanup 设置为 true 来忽略此操作。
+* on：发布的时机，这里配置为 tags : true，即只在有 tag 的情况才发布。
 
-2. 打Tag后Push代码触发CI。
+2. 打 Tag 后 Push 代码触发 CI 。
 
 ```shell
 git tag -a v0.0.1-alpha-1 -m "这里是Tag注释，说清楚这个版本的主要改动，也可以省略-m参数直接写长文本"
@@ -200,14 +200,14 @@ before_install:
 after_deploy:
 - fir p app/build/outputs/apk/release/app-release.apk -T $FIR_API_TOKEN -c "`git cat-file tag $TRAVIS_TAG`"
 ```
-4. 打Tag后Push代码触发CI。
+4. 打 Tag 后 Push 代码触发 CI 。
 
 ### 通知
 
 #### SendCloud邮件通知
 
-1. 注册SendCloud。
-2. 创建触发式模板update_template。
+1. 注册 SendCloud 。
+2. 创建触发式模板 update_template 。
 
 ```text
 %TRAVIS_REPO_SLUG%新版本%TRAVIS_TAG%已经发布了，功能更新：
@@ -219,7 +219,7 @@ after_deploy:
 https://fir.im/ep8s
 ```
 
-3. 添加配置，调用发送邮件API。
+3. 添加配置，调用发送邮件 API 。
 
 ```yml
 after_deploy:
@@ -227,4 +227,4 @@ after_deploy:
     --data-urlencode "xsmtpapi={\"to\":[\"806957428@qq.com\"],\"sub\":{\'%TRAVIS_REPO_SLUG%\':[\'$TRAVIS_REPO_SLUG\'],\'%TRAVIS_TAG%\':[\'$TRAVIS_TAG\'],\'%TAG_DESCRIPTION%\':[\'$(git cat-file tag $TRAVIS_TAG)\']}}" http://api.sendcloud.net/apiv2/mail/sendtemplate
 ```
 
-4. 打Tag后Push代码触发CI。
+4. 打 Tag 后 Push 代码触发 CI 。
