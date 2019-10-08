@@ -91,28 +91,24 @@ def keystorePWD = ''
 def keystoreAlias = ''
 def keystoreAliasPWD = ''
 // local.properties file in the root director
-def keyfile = project.rootProject.file('local.properties')
+def keyFile = project.rootProject.file('local.properties')
 
 Properties properties = new Properties()
 // local.properties exists
-if (keyfile.exists()) {
-    properties.load(keyfile.newDataInputStream())
+if (keyFile.exists()) {
+    properties.load(keyFile.newDataInputStream())
 } else {
-    // Travis-CI
-    keyfile = file("/jks/mrd@vdreamers")
-    keystorePWD = System.getenv("KEYSTORE_PWD")
-    keystoreAlias = System.getenv("KEYSTORE_ALIAS")
-    keystoreAliasPWD = System.getenv("KEYSTORE_ALIAS_PWD")
+    keyFile = file("../no_exists_keystore.tmp")
 }
 
 // local.properties contains keystore.path
 if (properties.containsKey("keystore.path")) {
-    keyfile = file(properties.getProperty("keystore.path"))
+    keyFile = file(properties.getProperty("keystore.path"))
     keystorePWD = properties.getProperty("keystore.password")
     keystoreAlias = properties.getProperty("keystore.alias")
     keystoreAliasPWD = properties.getProperty("keystore.alias_password")
 } else {
-    keyfile = file("no_exists_keystore.tmp")
+    keyFile = file("../no_exists_keystore.tmp")
 }
 
 android {
@@ -120,7 +116,7 @@ android {
         release {
             keyAlias keystoreAlias
             keyPassword keystoreAliasPWD
-            storeFile keyfile
+            storeFile keyFile
             storePassword keystorePWD
         }
     }
@@ -133,8 +129,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // 签名文件存在，则签名
-            if (keyfile.exists()) {
+            if (keyFile.exists()) {
                 println("WITH -> buildTypes -> release: using jks key")
                 signingConfig signingConfigs.release
             } else {
@@ -142,6 +137,14 @@ android {
                 signingConfig signingConfigs.debug
             }
         }
+    }
+
+    def isRunningOnTravis = System.getenv("CI") == "true"
+    if (isRunningOnTravis) {
+        keyFile = file("../mrd@vdreamers")
+        keystorePWD = System.getenv("KEYSTORE_PWD")
+        keystoreAlias = System.getenv("KEYSTORE_ALIAS")
+        keystoreAliasPWD = System.getenv("KEYSTORE_ALIAS_PWD")
     }
 }
 ```
