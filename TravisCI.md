@@ -185,5 +185,42 @@ git tag -a v0.0.1-alpha-1 -m "这里是Tag注释，说清楚这个版本的主�
 git push origin --tags
 ```
 
+#### [Fir.im](https://fir.im/)
+
+1. 登录 Fir.im 获取 API Token 。
+2. 将获取的 API Toke n配置到 Travis CI 的环境变量 FIR_API_TOKEN。
+3. 添加配置。
+
+```yml
+before_install:
+- gem install fir-cli
+after_deploy:
+- fir p app/build/outputs/apk/release/app-release.apk -T $FIR_API_TOKEN -c "`git cat-file tag $TRAVIS_TAG`"
+```
+4. 打Tag后Push代码触发CI。
+
 ### 通知
 
+#### SendCloud邮件通知
+
+1. 注册SendCloud。
+2. 创建触发式模板update_template。
+
+```text
+%TRAVIS_REPO_SLUG%新版本%TRAVIS_TAG%已经发布了，功能更新：
+   
+   
+%TAG_DESCRIPTION%
+   
+去下载：
+https://fir.im/ep8s
+```
+
+3. 添加配置，调用发送邮件API。
+
+```yml
+after_deploy:
+- curl -d "apiUser=******&apiKey=******&from=test@test.com&fromName=testTitle&subject=测试&replyTo=test@test.com&templateInvokeName=update_template" --data-urlencode "xsmtpapi={'to': ['806957428@qq.com'],'sub':{'\%TRAVIS_REPO_SLUG\%': ['$TRAVIS_REPO_SLUG'],'\%TRAVIS_TAG\%':['$TRAVIS_TAG'],'\%TAG_DESCRIPTION\%':['$(git cat-file tag $TRAVIS_TAG | awk 1 ORS='<br>')']}}" http://api.sendcloud.net/apiv2/mail/sendtemplate
+```
+
+4. 打Tag后Push代码触发CI。
