@@ -224,7 +224,7 @@ https://fir.im/ep8s
 ```yml
 after_deploy:
   - curl -d "apiUser=******&apiKey=******&from=test@test.com&fromName=testTitle&subject=测试&replyTo=test@test.com&templateInvokeName=update_template"
-    --data-urlencode "xsmtpapi={\"to\":[\"806957428@qq.com\"],\"sub\":{\'%TRAVIS_REPO_SLUG%\':[\'$TRAVIS_REPO_SLUG\'],\'%TRAVIS_TAG%\':[\'$TRAVIS_TAG\'],\'%TAG_DESCRIPTION%\':[\'$(git cat-file tag $TRAVIS_TAG)\']}}" http://api.sendcloud.net/apiv2/mail/sendtemplate
+    --data-urlencode "xsmtpapi={'to':['806957428@qq.com'],'sub':{'%TRAVIS_REPO_SLUG%':['$TRAVIS_REPO_SLUG'],'%TRAVIS_TAG%':['$TRAVIS_TAG'],'%TAG_DESCRIPTION%':['$(git cat-file tag $TRAVIS_TAG)']}}" http://api.sendcloud.net/apiv2/mail/sendtemplate
 ```
 
 4. 打 Tag 后 Push 代码触发 CI 。
