@@ -111,6 +111,14 @@ if (properties.containsKey("keystore.path")) {
     keyFile = file("../no_exists_keystore.tmp")
 }
 
+def isRunningOnTravis = System.getenv("CI") == "true"
+if (isRunningOnTravis) {
+    keyFile = file("../mrd@vdreamers")
+    keystorePWD = System.getenv("KEYSTORE_PWD")
+    keystoreAlias = System.getenv("KEYSTORE_ALIAS")
+    keystoreAliasPWD = System.getenv("KEYSTORE_ALIAS_PWD")
+}
+
 android {
     signingConfigs {
         release {
@@ -119,13 +127,6 @@ android {
             storeFile keyFile
             storePassword keystorePWD
         }
-    }
-    def isRunningOnTravis = System.getenv("CI") == "true"
-    if (isRunningOnTravis) {
-        keyFile = file("../mrd@vdreamers")
-        keystorePWD = System.getenv("KEYSTORE_PWD")
-        keystoreAlias = System.getenv("KEYSTORE_ALIAS")
-        keystoreAliasPWD = System.getenv("KEYSTORE_ALIAS_PWD")
     }
     buildTypes {
         debug {
