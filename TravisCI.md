@@ -120,6 +120,13 @@ android {
             storePassword keystorePWD
         }
     }
+    def isRunningOnTravis = System.getenv("CI") == "true"
+    if (isRunningOnTravis) {
+        keyFile = file("../mrd@vdreamers")
+        keystorePWD = System.getenv("KEYSTORE_PWD")
+        keystoreAlias = System.getenv("KEYSTORE_ALIAS")
+        keystoreAliasPWD = System.getenv("KEYSTORE_ALIAS_PWD")
+    }
     buildTypes {
         debug {
             minifyEnabled false
@@ -129,7 +136,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            if (keyFile.exists()) {
+            if (keyFile.exists() || isRunningOnTravis) {
                 println("WITH -> buildTypes -> release: using jks key")
                 signingConfig signingConfigs.release
             } else {
@@ -137,14 +144,6 @@ android {
                 signingConfig signingConfigs.debug
             }
         }
-    }
-
-    def isRunningOnTravis = System.getenv("CI") == "true"
-    if (isRunningOnTravis) {
-        keyFile = file("../mrd@vdreamers")
-        keystorePWD = System.getenv("KEYSTORE_PWD")
-        keystoreAlias = System.getenv("KEYSTORE_ALIAS")
-        keystoreAliasPWD = System.getenv("KEYSTORE_ALIAS_PWD")
     }
 }
 ```
