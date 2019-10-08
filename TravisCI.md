@@ -185,9 +185,5 @@ git tag -a v0.0.1-alpha-1 -m "这里是Tag注释，说清楚这个版本的主�
 git push origin --tags
 ```
 
-#### [Fir.im](https://fir.im/)
-
-#### [蒲公英](https://www.pgyer.com/)
-
 ### 通知
 

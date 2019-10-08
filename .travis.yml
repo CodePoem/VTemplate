@@ -25,6 +25,7 @@ cache:
 before_install:
   - openssl aes-256-cbc -K $encrypted_cd91ae131fae_key -iv $encrypted_cd91ae131fae_iv
     -in mrd@vdreamers.enc -out mrd@vdreamers -d
+  - gem install fir-cli
 deploy:
   provider: releases
   api_key:
@@ -36,3 +37,5 @@ deploy:
     repo: CodePoem/VTemplate
     # 这句手动添加
     tags: true
+after_deploy:
+  - fir p app/build/outputs/apk/release/app-release.apk -T $FIR_API_TOKEN -c "`git cat-file tag $TRAVIS_TAG`"
