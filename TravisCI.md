@@ -70,7 +70,7 @@ travis encrypt-file XXX.jks --add
 ```yml
 before_install:
   - openssl aes-256-cbc -K $encrypted_cd91ae131fae_key -iv $encrypted_cd91ae131fae_iv
-    -in mrd@vdreamers.enc -out ~\/jks/mrd@vdreamers -d
+    -in mrd@vdreamers.enc -out mrd@vdreamers -d
 ```
 
 #### 加密证书密码
