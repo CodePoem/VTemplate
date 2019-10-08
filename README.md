@@ -1,6 +1,7 @@
 # VTemplate
 
 徽章模板
+
 [![Build Status](https://travis-ci.org/CodePoem/VTemplate.svg?branch=master)](https://travis-ci.org/CodePoem/VTemplate)
 
 VTemplate is our template for repositories.

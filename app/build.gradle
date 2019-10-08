@@ -1,5 +1,33 @@
 apply plugin: 'com.android.application'
 
+def keystorePWD = ''
+def keystoreAlias = ''
+def keystoreAliasPWD = ''
+// local.properties file in the root director
+def keyfile = project.rootProject.file('local.properties')
+
+Properties properties = new Properties()
+// local.properties exists
+if (keyfile.exists()) {
+    properties.load(keyfile.newDataInputStream())
+} else {
+    // Travis-CI
+    keyfile = file("/jks/mrd@vdreamers")
+    keystorePWD = System.getenv("KEYSTORE_PWD")
+    keystoreAlias = System.getenv("KEYSTORE_ALIAS")
+    keystoreAliasPWD = System.getenv("KEYSTORE_ALIAS_PWD")
+}
+
+// local.properties contains keystore.path
+if (properties.containsKey("keystore.path")) {
+    keyfile = file(properties.getProperty("keystore.path"))
+    keystorePWD = properties.getProperty("keystore.password")
+    keystoreAlias = properties.getProperty("keystore.alias")
+    keystoreAliasPWD = properties.getProperty("keystore.alias_password")
+} else {
+    keyfile = file("no_exists_keystore.tmp")
+}
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -11,10 +39,31 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    signingConfigs {
+        release {
+            keyAlias keystoreAlias
+            keyPassword keystoreAliasPWD
+            storeFile keyfile
+            storePassword keystorePWD
+        }
+    }
     buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // 签名文件存在，则签名
+            if (keyfile.exists()) {
+                println("WITH -> buildTypes -> release: using jks key")
+                signingConfig signingConfigs.release
+            } else {
+                println("WITH -> buildTypes -> release: using default key")
+                signingConfig signingConfigs.debug
+            }
         }
     }
 }
