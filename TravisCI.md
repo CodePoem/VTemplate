@@ -158,6 +158,10 @@ android {
 
 1. 命令行自动生成 deploy 配置。
 
+```shell
+travis setup releases
+```
+
 需要输入 GitHub 账户名和密码以及 apk 路径，如 app/build/outputs/apk/app-release.apk
 执行完后会自动在 .travis.yml 添加如下配置：
 
