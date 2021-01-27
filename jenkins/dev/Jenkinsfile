@@ -1,0 +1,65 @@
+pipeline {
+    agent {
+        label 'master'
+    }
+    parameters {
+        gitParameter name: 'CHOOSE_BRANCH_TAG',
+                     type: 'PT_BRANCH_TAG',
+                     branchFilter: 'origin/(.*)',
+                     defaultValue: 'master',
+                     selectedValue: 'DEFAULT',
+                     sortMode: 'DESCENDING_SMART',
+                     useRepository: 'https://github.com/CodePoem/VTemplate',
+                     description: '选择分支或者tag'
+        choice(name: 'CHOOSE_PRODUCT_FLAVORS', choices: ['Internal', 'Published'], description: '选择产品风味：Internal（内测版本）/ Published（公测版本）')
+        choice(name: 'CHOOSE_BUILD_TYPES', choices: ['Verify', 'Debug', 'Release'], description: '选择构建类型：Debug（调试包）/ Verify（验证包）/ Release（正式包）' )
+        booleanParam(name: 'ENABLE_ANALYSIS', defaultValue: false, description: '是否开启代码静态检测')
+    }
+    stages {
+        stage('CheckOut') {
+            steps {
+                deleteDir()
+                checkout([$class: 'GitSCM', branches: [[name: "${params.CHOOSE_BRANCH_TAG}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'codepoem', url: 'https://github.com/CodePoem/VTemplate']]])
+            }
+        }
+        stage('Build') {
+            steps {
+                sh "./gradlew clean"
+                sh "./gradlew assemble${params.CHOOSE_PRODUCT_FLAVORS}${params.CHOOSE_BUILD_TYPES}"
+            }
+        }
+        stage('Analysis') {
+            when {
+                expression {
+                    return params.ENABLE_ANALYSIS
+                }
+            }
+            steps {
+                sh "./gradlew lint${params.CHOOSE_PRODUCT_FLAVORS}${params.CHOOSE_BUILD_TYPES}"
+                androidLint canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '**/static_reports/**/**/**/*_lint.xml', unHealthy: ''
+            }
+        }
+        stage('ArchiveArtifacts') {
+            steps {
+                archiveArtifacts artifacts: '**/app/build/outputs/apk/**/*.apk,**/static_reports/**/**/**/*.html,**/static_reports/**/**/**/*.xml', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
+            }
+        }
+   }
+   post {
+       always {
+           echo 'One way or another, I have finished'
+       }
+       success {
+           echo 'I succeeded!'
+       }
+       unstable {
+           echo 'I am unstable :/'
+       }
+       failure {
+           echo 'I failed :('
+       }
+       changed {
+           echo 'Things were different before...'
+       }
+   }
+}
