@@ -59,6 +59,7 @@ android {
             shrinkResources false
             //是否开启混淆
             minifyEnabled false
+            buildConfigField "String", "JENKINS_BUILD_NUMBER", JENKINS_BUILD_NUMBER
             buildConfigField "boolean","RUNNING_ON_TRAVIS", "${runningOnTravis}"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
@@ -70,6 +71,7 @@ android {
             shrinkResources true
             //是否开启混淆
             minifyEnabled true
+            buildConfigField "String", "JENKINS_BUILD_NUMBER", JENKINS_BUILD_NUMBER
             buildConfigField "boolean","RUNNING_ON_TRAVIS", "${runningOnTravis}"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             if (keyFile.exists()) {
