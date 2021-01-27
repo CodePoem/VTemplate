@@ -24,7 +24,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'sed -i \'\' "s/JENKINS_BUILD_NUMBER.*/JENKINS_BUILD_NUMBER=\\ \"$BUILD_NUMBER\"\/g" $WORKSPACE/gradle.properties'
+                sh 'sed -i \'\' "s/JENKINS_BUILD_NUMBER.*/JENKINS_BUILD_NUMBER=\\ \"$BUILD_NUMBER\"\\/g" $WORKSPACE/gradle.properties'
                 sh "./gradlew clean"
                 sh "./gradlew assemble${params.CHOOSE_PRODUCT_FLAVORS}${params.CHOOSE_BUILD_TYPES}"
             }
