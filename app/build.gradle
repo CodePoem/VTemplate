@@ -24,8 +24,8 @@ if (properties.containsKey("keystore.path")) {
     keyFile = file("../no_exists_keystore.tmp")
 }
 
-def isRunningOnTravis = System.getenv("CI") == "true"
-if (isRunningOnTravis) {
+def runningOnTravis = System.getenv("CI") == "true"
+if (runningOnTravis) {
     keyFile = file("../mrd@vdreamers")
     keystorePWD = System.getenv("KEYSTORE_PWD")
     keystoreAlias = System.getenv("KEYSTORE_ALIAS")
@@ -39,8 +39,8 @@ android {
         applicationId "com.vdreamers.vtemplate"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 4
-        versionName "1.4"
+        versionCode 100105000
+        versionName "1.5.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
@@ -53,20 +53,57 @@ android {
     }
     buildTypes {
         debug {
+            //是否优化zip
+            zipAlignEnabled false
+            // 移除无用的resource文件
+            shrinkResources false
+            //是否开启混淆
             minifyEnabled false
+            buildConfigField "boolean","RUNNING_ON_TRAVIS", "${runningOnTravis}"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
         }
         release {
-            minifyEnabled false
+            //是否优化zip
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources true
+            //是否开启混淆
+            minifyEnabled true
+            buildConfigField "boolean","RUNNING_ON_TRAVIS", "${runningOnTravis}"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            if (keyFile.exists() || isRunningOnTravis) {
+            if (keyFile.exists()) {
                 println("WITH -> buildTypes -> release: using jks key")
                 signingConfig signingConfigs.release
             } else {
                 println("WITH -> buildTypes -> release: using default key")
                 signingConfig signingConfigs.debug
             }
+        }
+        verify {
+            initWith release
+            debuggable true
+        }
+    }
+
+    flavorDimensions "openness"
+
+    productFlavors {
+        internal {
+            dimension 'openness'
+            applicationIdSuffix ".internal"
+        }
+        published {
+            dimension 'openness'
+            versionNameSuffix "-published"
+        }
+    }
+
+    applicationVariants.all { variant ->
+        def buildType = variant.buildType.name
+        def flavor = variant.flavorName
+        variant.outputs.all {
+            outputFileName = "Template-v${variant.versionName}-${flavor}-${buildType}.apk"
         }
     }
 }
