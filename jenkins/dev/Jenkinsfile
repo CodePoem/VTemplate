@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
                     sh script: 'chmod +x ./scripts/update_file_content.sh'
-                    sh script: '"""./scripts/update_file_content.sh -f gradle.properties -e "s#JENKINS_BUILD_NUMBER.*#JENKINS_BUILD_NUMBER='$BUILD_NUMBER'#g""""'
+                    sh script: '"""./scripts/update_file_content.sh -f gradle.properties -e \"s#JENKINS_BUILD_NUMBER.*#JENKINS_BUILD_NUMBER=\'$BUILD_NUMBER\'#g\""""'
                 }
                 sh "./gradlew clean"
                 sh "./gradlew assemble${params.CHOOSE_PRODUCT_FLAVORS}${params.CHOOSE_BUILD_TYPES}"
