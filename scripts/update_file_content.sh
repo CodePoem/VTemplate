@@ -17,19 +17,6 @@ help_msg_update_expression(){
 
 # 更新
 start_update() {
-  if [[ `uname` == 'Darwin' ]]
-  then
-    echo "Mac OS"
-    sed -i '' $update_expression $update_file_path
-  elif [[ `uname` == 'Linux' ]]
-  then
-      echo "Linux"
-      sed -i $update_expression $update_file_path
-  fi
-}
-
-# 主函数
-main(){
   # arg judge
   #逐个接收选项及其参数
   while getopts "f:e:" arg
@@ -49,7 +36,21 @@ main(){
       ;;
     esac
   done
-  start_update
+  if [[ `uname` == 'Darwin' ]]
+  then
+    echo "Mac OS"
+    sed -i '' $update_expression $update_file_path
+  elif [[ `uname` == 'Linux' ]]
+  then
+      echo "Linux"
+      sed -i $update_expression $update_file_path
+  fi
+}
+
+# 主函数
+main(){
+  # 更新Jenkins build版本号
+  start_update -f gradle.properties -e "s#JENKINS_BUILD_NUMBER.*#JENKINS_BUILD_NUMBER=\'$BUILD_NUMBER\'#g"
 }
 
 main "$@"
