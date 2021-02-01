@@ -50,7 +50,7 @@ start_update() {
 # 主函数
 main(){
   # 更新Jenkins build版本号
-  start_update -f gradle.properties -e "s#JENKINS_BUILD_NUMBER.*#JENKINS_BUILD_NUMBER=\'$BUILD_NUMBER\'#g"
+  start_update -f gradle.properties -e "s#JENKINS_BUILD_NUMBER.*#JENKINS_BUILD_NUMBER=\"$BUILD_NUMBER\"#g"
 }
 
 main "$@"
