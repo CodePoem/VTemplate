@@ -39,7 +39,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tv_hello_world"
+        app:layout_constraintTop_toTopOf="@+id/tv_jenkins_build_number"
         tools:text="Jenkins Build URL" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
