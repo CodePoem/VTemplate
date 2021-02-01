@@ -25,8 +25,8 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh script: 'chmod +x ./scripts/update_file_content.sh'
-                    sh script: './scripts/update_file_content.sh'
+                    sh script: 'chmod +x ./scripts/jenkins_build_info.sh'
+                    sh script: './scripts/jenkins_build_info.sh'
                 }
                 sh "./gradlew clean"
                 sh "./gradlew assemble${params.CHOOSE_PRODUCT_FLAVORS}${params.CHOOSE_BUILD_TYPES}"
