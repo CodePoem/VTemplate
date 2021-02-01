@@ -18,7 +18,8 @@ help_msg_update_expression(){
 # 更新
 start_update() {
   # arg judge
-  #逐个接收选项及其参数
+  # 逐个接收选项及其参数
+  local OPTIND
   while getopts "f:e:" arg
   do
     case "$arg" in
