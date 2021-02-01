@@ -30,5 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
         TextView tvJenkinsBuildNumber = findViewById(R.id.tv_jenkins_build_number);
         tvJenkinsBuildNumber.setText(BuildConfig.JENKINS_BUILD_NUMBER);
+
+        TextView tvJenkinsBuildUrl = findViewById(R.id.tv_jenkins_build_url);
+        tvJenkinsBuildUrl.setText(BuildConfig.JENKINS_BUILD_URL);
     }
 }

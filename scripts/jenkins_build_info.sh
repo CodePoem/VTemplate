@@ -51,6 +51,7 @@ start_update() {
 main(){
   # 更新Jenkins build版本号
   start_update -f gradle.properties -e "s#JENKINS_BUILD_NUMBER.*#JENKINS_BUILD_NUMBER=\"$BUILD_NUMBER\"#g"
+  start_update -f gradle.properties -e "s#JENKINS_BUILD_URL.*#JENKINS_BUILD_URL=\"$BUILD_URL\"#g"
 }
 
 main "$@"
