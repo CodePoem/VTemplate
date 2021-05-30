@@ -27,7 +27,8 @@ before_install:
     -in mrd@vdreamers.enc -out mrd@vdreamers -d
   - gem install fir-cli
   - yes | sdkmanager --update
-  - yes | sdkmanager --licenses
+  - yes | sdkmanager "platforms;android-30"
+  - yes | sdkmanager "build-tools;30.0.3"
 deploy:
   provider: releases
   api_key:
