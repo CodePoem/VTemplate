@@ -1,0 +1,82 @@
+pipeline {
+    agent {
+        label 'master'
+    }
+    parameters {
+        gitParameter name: 'CHOOSE_BRANCH_TAG',
+                     type: 'PT_BRANCH_TAG',
+                     branchFilter: 'origin/(.*)',
+                     defaultValue: 'master',
+                     selectedValue: 'DEFAULT',
+                     sortMode: 'DESCENDING_SMART',
+                     useRepository: 'https://github.com/CodePoem/VTemplate',
+                     description: 'Select your branch or tag.'
+        string(name: 'BUILD_TOOLS_VERSION', defaultValue: '29.0.3', description: 'Android sdk build tools version')
+    }
+    stages {
+        stage('CheckOut') {
+            steps {
+                deleteDir()
+                checkout([$class: 'GitSCM', branches: [[name: "${params.CHOOSE_BRANCH_TAG}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'codepoem', url: 'https://github.com/CodePoem/VTemplate']]])
+            }
+        }
+        stage('Build') {
+            steps {
+                sh './gradlew clean'
+                sh './gradlew app:assemblePublishedRelease'
+            }
+        }
+        stage('Reinforce') {
+            steps {
+                retry(10){
+                    script{
+                        sh script: 'chmod +x ./scripts/reinforce.sh'
+                        sh script: './scripts/reinforce.sh'
+                    }
+                }
+                script{
+                    sh script: 'chmod +x ./scripts/resign.sh'
+                    sh script: './scripts/resign.sh ${BUILD_TOOLS_VERSION}'
+                }
+            }
+        }
+        stage('MultiChannel') {
+            steps {
+                script{
+                    sh script: 'chmod +x ./scripts/multichannel.sh'
+                    sh script: './scripts/multichannel.sh'
+                }
+            }
+        }
+        stage('ArchiveArtifacts') {
+            steps {
+                script{
+                    sh script: 'chmod +x ./scripts/copy_artifacts.sh'
+                    sh script: './scripts/copy_artifacts.sh'
+                }
+                archiveArtifacts artifacts: 'artifacts/*release*.apk,artifacts/mapping.txt', excludes: 'artifacts/*_legu.apk', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
+            }
+        }
+   }
+   post {
+       always {
+           echo 'One way or another, I have finished'
+       }
+       success {
+           echo 'I succeeded!'
+           script{
+               sh script: 'mkdir -p $HOME/kkl-andoird/${CHOOSE_BRANCH_TAG}'
+               sh script: 'cp -avX artifacts $HOME/kkl-andoird/${CHOOSE_BRANCH_TAG}'
+           }
+       }
+       unstable {
+           echo 'I am unstable :/'
+       }
+       failure {
+           echo 'I failed :('
+       }
+       changed {
+           echo 'Things were different before...'
+       }
+   }
+}
